@@ -1,4 +1,5 @@
 
+ 
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,8 +9,8 @@
 <title>MOVPARK — Discover Movies</title>
 <style>
 :root{
-  --bg:#08090d;--panel:#141620;--text:#fff;
-  --muted:#9da1b2;--accent:#a78bfa;--line:#282a38;
+--bg:#08090d;--panel:#141620;--text:#fff;
+--muted:#9da1b2;--accent:#a78bfa;--line:#282a38;
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);
@@ -85,334 +86,287 @@ width:38px;height:38px;font-size:24px}
 .api-note{font-size:12px;color:#777;padding:10px 0}
 @media(max-width:1000px){.grid{grid-template-columns:repeat(4,1fr)}}
 @media(max-width:650px){
-  header{height:auto}.nav{padding:13px 4%;flex-wrap:wrap}
-  nav{display:none}.search{width:150px}
-  .logo{font-size:21px}.hero{min-height:390px}
-  .hero-content{padding:50px 0}
-  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-  .detail{grid-template-columns:1fr;padding:18px}
-  .detail img{max-width:180px}
-  .section-head h2{font-size:19px}
+header{height:auto}.nav{padding:13px 4%;flex-wrap:wrap}
+nav{display:none}.search{width:150px}
+.logo{font-size:21px}.hero{min-height:390px}
+.hero-content{padding:50px 0}
+.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.detail{grid-template-columns:1fr;padding:18px}
+.detail img{max-width:180px}
+.section-head h2{font-size:19px}
 }
 </style>
 </head>
 <body>
-
 <header>
- <div class="nav">
-  <a class="logo" href="#" style="text-decoration:none;color:white">MOV<span>PARK</span></a>
-  <nav>
-   <a href="#home">Home</a>
-   <a href="#trending">Trending</a>
-   <a href="#movies">Movies</a>
-   <a href="#latest">Latest</a>
-  </nav>
-  <input id="search" class="search" placeholder="Search movies..." type="search">
- </div>
+<div class="nav">
+<a class="logo" href="#" style="text-decoration:none;color:white">MOV<span>PARK</span></a>
+<nav>
+<a href="#home">Home</a>
+<a href="#trending">Trending</a>
+<a href="#movies">Movies</a>
+<a href="#latest">Latest</a>
+</nav>
+<input id="search" class="search" placeholder="Search movies..." type="search">
+</div>
 </header>
-
 <main>
 <section class="hero" id="home">
- <div class="container">
-  <div class="hero-content">
-   <div class="eyebrow">YOUR CINEMATIC WORLD</div>
-   <h1>Discover.<br>Explore.<br>Experience.</h1>
-   <p>Explore thousands of movies, discover trending titles and find your next favourite story.</p>
-   <button class="primary" onclick="document.querySelector('#trending').scrollIntoView({behavior:'smooth'})">
-    Explore Movies →
-   </button>
-  </div>
- </div>
-</section>
-
 <div class="container">
-
+<div class="hero-content">
+<div class="eyebrow">YOUR CINEMATIC WORLD</div>
+<h1>Discover.<br>Explore.<br>Experience.</h1>
+<p>Explore thousands of movies, discover trending titles and find your next favourite story.</p>
+<button class="primary" onclick="document.querySelector('#trending').scrollIntoView({behavior:'smooth'})">
+Explore Movies →
+</button>
+</div>
+</div>
+</section>
+<div class="container">
 <section id="trending">
- <div class="section-head">
-  <h2>🔥 Trending Movies</h2>
-  <span class="muted">Popular this week</span>
- </div>
- <div id="trendingGrid" class="grid"><div class="loading">Loading movies...</div></div>
+<div class="section-head">
+<h2>🔥 Trending Movies</h2>
+<span class="muted">Popular this week</span>
+</div>
+<div id="trendingGrid" class="grid"><div class="loading">Loading movies...</div></div>
 </section>
-
 <section id="movies">
- <div class="section-head">
-  <h2>Explore Movies</h2>
-  <span class="muted" id="resultCount"></span>
- </div>
- <div class="filters" id="genres">
-  <button class="chip active" data-genre="all">All</button>
- </div>
- <div class="grid" id="movieGrid"><div class="loading">Loading catalogue...</div></div>
- <button class="secondary more" id="loadMore" onclick="loadMore()">Load More</button>
+<div class="section-head">
+<h2>Explore Movies</h2>
+<span class="muted" id="resultCount"></span>
+</div>
+<div class="filters" id="genres">
+<button class="chip active" data-genre="all">All</button>
+</div>
+<div class="grid" id="movieGrid"><div class="loading">Loading catalogue...</div></div>
+<button class="secondary more" id="loadMore" onclick="loadMore()">Load More</button>
 </section>
-
 <section id="latest">
- <div class="section-head">
-  <h2>🎬 Latest Movies</h2>
-  <span class="muted">Recently released</span>
- </div>
- <div class="grid" id="latestGrid"><div class="loading">Loading...</div></div>
+<div class="section-head">
+<h2>🎬 Latest Movies</h2>
+<span class="muted">Recently released</span>
+</div>
+<div class="grid" id="latestGrid"><div class="loading">Loading...</div></div>
 </section>
-
 </div>
 </main>
-
 <footer>
- <div class="container footer-inner">
-  <div><b style="color:white;letter-spacing:2px">MOVPARK</b>
-   <div>Discover your next favourite movie.</div>
-  </div>
-  <div>Movie information powered by TMDB.</div>
-  <div>© <span id="year"></span> MOVPARK</div>
- </div>
- <div class="container api-note">
-  This product uses the TMDB API but is not endorsed or certified by TMDB.
- </div>
-</footer>
-
-<div class="modal" id="modal" onclick="if(event.target===this)closeModal()">
- <div class="dialog">
-  <button class="close" onclick="closeModal()">×</button>
-  <div class="detail" id="detail"></div>
- </div>
+<div class="container footer-inner">
+<div><b style="color:white;letter-spacing:2px">MOVPARK</b>
+<div>Discover your next favourite movie.</div>
 </div>
-
+<div>Movie information powered by TMDB.</div>
+<div>© <span id="year"></span> MOVPARK</div>
+</div>
+<div class="container api-note">
+This product uses the TMDB API but is not endorsed or certified by TMDB.
+</div>
+</footer>
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()">
+<div class="dialog">
+<button class="close" onclick="closeModal()">×</button>
+<div class="detail" id="detail"></div>
+</div>
+</div>
 <script>
 /* ======================================
-   MOVPARK CONFIGURATION
-   Add your TMDB API V3 key below.
+MOVPARK CONFIGURATION
+Add your TMDB API V3 key below.
 ====================================== */
-
 const TMDB_API_KEY = "916706f1b6e4d8f8a66934be7d0b6410";
-
 const API = "https://api.themoviedb.org/3";
 const IMG = "https://image.tmdb.org/t/p/w500";
 const BACKDROP = "https://image.tmdb.org/t/p/w1280";
-
 let currentPage = 1;
 let currentGenre = "all";
 let currentQuery = "";
 let searchTimer;
 let genreList = [];
-
 const movieGrid = document.getElementById("movieGrid");
 const trendingGrid = document.getElementById("trendingGrid");
 const latestGrid = document.getElementById("latestGrid");
-
 document.getElementById("year").textContent =
- new Date().getFullYear();
-
+new Date().getFullYear();
 function validKey(){
- return TMDB_API_KEY &&
- TMDB_API_KEY !== "YOUR_TMDB_API_KEY";
+return TMDB_API_KEY &&
+TMDB_API_KEY !== "YOUR_TMDB_API_KEY";
 }
-
 async function api(endpoint){
- if(!validKey()){
-  throw new Error("Please add your TMDB API key in the configuration.");
- }
- const separator = endpoint.includes("?") ? "&" : "?";
- const url = API + endpoint + separator +
- "api_key=" + encodeURIComponent(TMDB_API_KEY);
-
- const response = await fetch(url);
- if(!response.ok) throw new Error("API error: " + response.status);
- return response.json();
+if(!validKey()){
+throw new Error("Please add your TMDB API key in the configuration.");
 }
-
+const separator = endpoint.includes("?") ? "&" : "?";
+const url = API + endpoint + separator +
+"api_key=" + encodeURIComponent(TMDB_API_KEY);
+const response = await fetch(url);
+if(!response.ok) throw new Error("API error: " + response.status);
+return response.json();
+}
 function poster(path){
- return path ? IMG + path : "";
+return path ? IMG + path : "";
 }
-
 function makeCard(movie){
- const el = document.createElement("article");
- el.className = "card";
-
- const image = poster(movie.poster_path);
- const title = movie.title || movie.name || "Untitled";
- const date = (movie.release_date || "").slice(0,4);
- const rating = movie.vote_average
-  ? Number(movie.vote_average).toFixed(1) : "N/A";
-
- el.innerHTML = `
-  ${image
-   ? `<img class="poster" loading="lazy" alt="" src="${image}">`
-   : `<div class="poster-placeholder">MOVPARK</div>`}
-  <h3></h3>
-  <small><span class="rating">★ ${rating}</span> · ${date || "N/A"}</small>
- `;
-
- el.querySelector("h3").textContent = title;
- el.addEventListener("click",()=>showDetails(movie.id));
- return el;
+const el = document.createElement("article");
+el.className = "card";
+const image = poster(movie.poster_path);
+const title = movie.title || movie.name || "Untitled";
+const date = (movie.release_date || "").slice(0,4);
+const rating = movie.vote_average
+? Number(movie.vote_average).toFixed(1) : "N/A";
+el.innerHTML = `
+${image
+? `<img class="poster" loading="lazy" alt="" src="${image}">`
+: `<div class="poster-placeholder">MOVPARK</div>`}
+<h3></h3>
+<small><span class="rating">★ ${rating}</span> · ${date || "N/A"}</small>
+`;
+el.querySelector("h3").textContent = title;
+el.addEventListener("click",()=>showDetails(movie.id));
+return el;
 }
-
 function displayMovies(target,movies){
- target.replaceChildren();
- if(!movies || !movies.length){
-  target.innerHTML='<div class="empty">No movies found.</div>';
-  return;
- }
- movies.forEach(movie=>target.appendChild(makeCard(movie)));
+target.replaceChildren();
+if(!movies || !movies.length){
+target.innerHTML='<div class="empty">No movies found.</div>';
+return;
 }
-
+movies.forEach(movie=>target.appendChild(makeCard(movie)));
+}
 function showError(target,message){
- target.innerHTML="";
- const el=document.createElement("div");
- el.className="error";
- el.textContent=message;
- target.appendChild(el);
+target.innerHTML="";
+const el=document.createElement("div");
+el.className="error";
+el.textContent=message;
+target.appendChild(el);
 }
-
 async function loadTrending(){
- try{
-  const data=await api("/trending/movie/week?language=en-US&page=1");
-  displayMovies(trendingGrid,data.results.slice(0,12));
- }catch(e){showError(trendingGrid,e.message)}
+try{
+const data=await api("/trending/movie/week?language=en-US&page=1");
+displayMovies(trendingGrid,data.results.slice(0,12));
+}catch(e){showError(trendingGrid,e.message)}
 }
-
 async function loadLatest(){
- try{
-  const data=await api("/movie/now_playing?language=en-US&page=1&region=IN");
-  displayMovies(latestGrid,data.results.slice(0,6));
- }catch(e){showError(latestGrid,e.message)}
+try{
+const data=await api("/movie/now_playing?language=en-US&page=1&region=IN");
+displayMovies(latestGrid,data.results.slice(0,6));
+}catch(e){showError(latestGrid,e.message)}
 }
-
 async function loadGenres(){
- try{
-  const data=await api("/genre/movie/list?language=en");
-  genreList=data.genres || [];
-  const area=document.getElementById("genres");
-
-  genreList.forEach(genre=>{
-   const button=document.createElement("button");
-   button.className="chip";
-   button.textContent=genre.name;
-   button.dataset.genre=genre.id;
-   button.addEventListener("click",()=>{
-    document.querySelectorAll(".chip").forEach(b=>b.classList.remove("active"));
-    button.classList.add("active");
-    currentGenre=String(genre.id);
-    currentPage=1;
-    loadMovies();
-   });
-   area.appendChild(button);
-  });
- }catch(e){console.error(e)}
+try{
+const data=await api("/genre/movie/list?language=en");
+genreList=data.genres || [];
+const area=document.getElementById("genres");
+genreList.forEach(genre=>{
+const button=document.createElement("button");
+button.className="chip";
+button.textContent=genre.name;
+button.dataset.genre=genre.id;
+button.addEventListener("click",()=>{
+document.querySelectorAll(".chip").forEach(b=>b.classList.remove("active"));
+button.classList.add("active");
+currentGenre=String(genre.id);
+currentPage=1;
+loadMovies();
+});
+area.appendChild(button);
+});
+}catch(e){console.error(e)}
 }
-
 async function loadMovies(){
- movieGrid.innerHTML='<div class="loading">Loading movies...</div>';
- try{
-  let endpoint;
-  if(currentQuery){
-   endpoint="/search/movie?language=en-US&include_adult=false&page="+currentPage+
-    "&query="+encodeURIComponent(currentQuery);
-  }else{
-   endpoint="/discover/movie?language=en-US&sort_by=popularity.desc&page="+currentPage;
-   if(currentGenre!=="all")endpoint+="&with_genres="+currentGenre;
-  }
-
-  const data=await api(endpoint);
-  if(currentPage===1)movieGrid.replaceChildren();
-
-  if(!data.results.length && currentPage===1){
-   showError(movieGrid,"No movies found.");
-  }else{
-   data.results.forEach(movie=>movieGrid.appendChild(makeCard(movie)));
-  }
-
-  document.getElementById("resultCount").textContent=
-   (data.total_results || 0).toLocaleString()+" movies";
-
-  document.getElementById("loadMore").style.display=
-   currentPage < Math.min(data.total_pages || 1,500) ? "block":"none";
-
- }catch(e){showError(movieGrid,e.message)}
+movieGrid.innerHTML='<div class="loading">Loading movies...</div>';
+try{
+let endpoint;
+if(currentQuery){
+endpoint="/search/movie?language=en-US&include_adult=false&page="+currentPage+
+"&query="+encodeURIComponent(currentQuery);
+}else{
+endpoint="/discover/movie?language=en-US&sort_by=popularity.desc&page="+currentPage;
+if(currentGenre!=="all")endpoint+="&with_genres="+currentGenre;
 }
-
+const data=await api(endpoint);
+if(currentPage===1)movieGrid.replaceChildren();
+if(!data.results.length && currentPage===1){
+showError(movieGrid,"No movies found.");
+}else{
+data.results.forEach(movie=>movieGrid.appendChild(makeCard(movie)));
+}
+document.getElementById("resultCount").textContent=
+(data.total_results || 0).toLocaleString()+" movies";
+document.getElementById("loadMore").style.display=
+currentPage < Math.min(data.total_pages || 1,500) ? "block":"none";
+}catch(e){showError(movieGrid,e.message)}
+}
 function loadMore(){
- currentPage++;
- loadMovies();
+currentPage++;
+loadMovies();
 }
-
 async function showDetails(id){
- const modal=document.getElementById("modal");
- const detail=document.getElementById("detail");
- modal.classList.add("show");
- detail.innerHTML='<div class="loading">Loading movie details...</div>';
-
- try{
-  const movie=await api("/movie/"+id+"?language=en-US");
-  const img=poster(movie.poster_path);
-  const genres=(movie.genres || []).map(g=>g.name).join(" · ");
-  const date=movie.release_date || "Unknown";
-  const rating=movie.vote_average
-   ? Number(movie.vote_average).toFixed(1):"N/A";
-
-  detail.innerHTML=`
-   ${img?`<img src="${img}" alt="">`:""}
-   <div>
-    <div class="eyebrow">MOVPARK MOVIE DETAILS</div>
-    <h2></h2>
-    <div class="tags"></div>
-    <p class="muted">Release date: ${date}</p>
-    <p class="rating">★ ${rating}/10</p>
-    <p></p>
-    <button class="secondary" onclick="closeModal()">Close</button>
-   </div>
-  `;
-
-  detail.querySelector("h2").textContent=movie.title;
-  detail.querySelector(".tags").textContent=genres;
-  detail.querySelectorAll("p")[2].textContent=
-   movie.overview || "No description available.";
-
- }catch(e){
-  detail.textContent=e.message;
- }
+const modal=document.getElementById("modal");
+const detail=document.getElementById("detail");
+modal.classList.add("show");
+detail.innerHTML='<div class="loading">Loading movie details...</div>';
+try{
+const movie=await api("/movie/"+id+"?language=en-US");
+const img=poster(movie.poster_path);
+const genres=(movie.genres || []).map(g=>g.name).join(" · ");
+const date=movie.release_date || "Unknown";
+const rating=movie.vote_average
+? Number(movie.vote_average).toFixed(1):"N/A";
+detail.innerHTML=`
+${img?`<img src="${img}" alt="">`:""}
+<div>
+<div class="eyebrow">MOVPARK MOVIE DETAILS</div>
+<h2></h2>
+<div class="tags"></div>
+<p class="muted">Release date: ${date}</p>
+<p class="rating">★ ${rating}/10</p>
+<p></p>
+<button class="secondary" onclick="closeModal()">Close</button>
+</div>
+`;
+detail.querySelector("h2").textContent=movie.title;
+detail.querySelector(".tags").textContent=genres;
+detail.querySelectorAll("p")[2].textContent=
+movie.overview || "No description available.";
+}catch(e){
+detail.textContent=e.message;
 }
-
+}
 function closeModal(){
- document.getElementById("modal").classList.remove("show");
+document.getElementById("modal").classList.remove("show");
 }
-
 document.getElementById("search").addEventListener("input",e=>{
- clearTimeout(searchTimer);
- searchTimer=setTimeout(()=>{
-  currentQuery=e.target.value.trim();
-  currentPage=1;
-  currentGenre="all";
-  document.querySelectorAll(".chip").forEach(b=>{
-   b.classList.toggle("active",b.dataset.genre==="all");
-  });
-  loadMovies();
- },450);
+clearTimeout(searchTimer);
+searchTimer=setTimeout(()=>{
+currentQuery=e.target.value.trim();
+currentPage=1;
+currentGenre="all";
+document.querySelectorAll(".chip").forEach(b=>{
+b.classList.toggle("active",b.dataset.genre==="all");
 });
-
+loadMovies();
+},450);
+});
 document.addEventListener("keydown",e=>{
- if(e.key==="Escape")closeModal();
+if(e.key==="Escape")closeModal();
 });
-
 async function start(){
- if(!validKey()){
-  const message="Add your TMDB API key in the configuration to load live movies.";
-  showError(trendingGrid,message);
-  showError(movieGrid,message);
-  showError(latestGrid,message);
-  document.getElementById("loadMore").style.display="none";
-  return;
- }
-
- await Promise.all([
-  loadTrending(),
-  loadLatest(),
-  loadGenres()
- ]);
- await loadMovies();
+if(!validKey()){
+const message="Add your TMDB API key in the configuration to load live movies.";
+showError(trendingGrid,message);
+showError(movieGrid,message);
+showError(latestGrid,message);
+document.getElementById("loadMore").style.display="none";
+return;
 }
-
+await Promise.all([
+loadTrending(),
+loadLatest(),
+loadGenres()
+]);
+await loadMovies();
+}
 start();
 </script>
 </body>
