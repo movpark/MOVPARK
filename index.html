@@ -7,473 +7,286 @@
 <title>MOVPARK - Watch Movies</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#080b12;color:#fff;font-family:Arial,sans-serif}
-header{padding:18px 5%;display:flex;justify-content:space-between;align-items:center;background:#101522;position:sticky;top:0;z-index:5}
-.logo{font-size:25px;font-weight:900;color:#f5bd35}
-header span{color:#aaa;font-size:12px}
-main{padding:25px 5%}
-.hero{padding:45px 25px;border-radius:18px;background:linear-gradient(120deg,#222b43,#111827);margin-bottom:30px}
-.hero h1{font-size:35px;margin:0 0 10px}
-.hero p{color:#bbb}
-input,select{padding:13px;border:1px solid #30394b;border-radius:9px;background:#151c2a;color:white;width:100%;margin:8px 0}
-.controls{display:grid;grid-template-columns:2fr 1fr;gap:10px}
-h2{margin-top:30px}
+body{margin:0;background:#090b12;color:white;font-family:Arial,sans-serif}
+header{padding:18px 5%;background:#111522;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.logo{font-size:27px;font-weight:bold;color:#e50914}
+input,select{padding:12px;border:0;border-radius:7px;background:#222839;color:white}
+main{padding:20px 5%}
+h2{margin-top:28px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:17px}
-.card{background:#131a27;border-radius:12px;overflow:hidden;cursor:pointer;transition:.2s}
-.card:hover{transform:translateY(-4px)}
-.card img{width:100%;aspect-ratio:2/3;object-fit:cover;background:#222}
-.card h3{font-size:14px;margin:10px}
-.card p{font-size:12px;color:#aaa;margin:0 10px 12px}
-button{border:0;padding:11px 17px;border-radius:8px;background:#f5bd35;color:#111;font-weight:bold;cursor:pointer}
-button:disabled{opacity:.5;cursor:not-allowed}
-.secondary{background:#263248;color:#fff}
-#status{color:#f5bd35;margin:15px 0}
-.modal{display:none;position:fixed;inset:0;background:#000e;z-index:10;overflow:auto;padding:20px}
-.dialog{max-width:750px;margin:30px auto;background:#111927;padding:22px;border-radius:15px}
-.close{float:right;background:#333;color:#fff}
-#player{width:100%;max-height:430px;background:#000;margin-top:15px}
-#message{color:#f5bd35;line-height:1.6}
-small{color:#999}
-footer{text-align:center;color:#777;padding:30px;font-size:12px}
-a{color:#f5bd35}
-@media(max-width:550px){.hero h1{font-size:27px}.controls{grid-template-columns:1fr}}
+.movie{background:#171c29;border-radius:9px;overflow:hidden;cursor:pointer}
+.movie img{width:100%;aspect-ratio:2/3;object-fit:cover}
+.movie p{padding:0 10px;font-size:14px;font-weight:bold}
+button{background:#e50914;color:white;border:0;padding:11px 16px;border-radius:6px;cursor:pointer;margin:4px}
+button:hover{background:#b20710}
+#modal{display:none;position:fixed;inset:0;background:#000e;overflow:auto;padding:20px;z-index:5}
+.panel{max-width:750px;margin:20px auto;background:#171c29;padding:20px;border-radius:12px}
+#player{width:100%;aspect-ratio:16/9;background:#000;margin-top:15px}
+#player iframe{width:100%;height:100%;border:0}
+.small{color:#b9c0d0;font-size:13px}
+a{color:#ff646b}
 </style>
 </head>
 <body>
 
 <header>
   <div class="logo">MOVPARK</div>
-  <span>DISCOVER MOVIES</span>
+  <input id="search" placeholder="Search movies..." oninput="searchMovies()">
+  <select id="language" onchange="loadMovies()">
+    <option value="">All Languages</option>
+    <option value="ml">Malayalam</option>
+    <option value="ta">Tamil</option>
+    <option value="te">Telugu</option>
+    <option value="hi">Hindi</option>
+    <option value="en">English</option>
+  </select>
 </header>
 
 <main>
-  <section class="hero">
-    <h1>Discover Movies.</h1>
-    <p>Explore movies and find legally shareable films.</p>
-    <div class="controls">
-      <input id="search" placeholder="Search movies..." />
-      <select id="language">
-        <option value="all">All Languages</option>
-        <option value="ml">Malayalam</option>
-        <option value="ta">Tamil</option>
-        <option value="hi">Hindi</option>
-        <option value="en">English</option>
-      </select>
-    </div>
-    <button onclick="searchMovies()">Search</button>
-  </section>
-
-  <div id="status">Loading movies...</div>
-
   <h2>Trending Movies</h2>
-  <div class="grid" id="trending"></div>
-
-  <h2>Explore Movies</h2>
-  <div class="grid" id="movies"></div>
-  <button class="secondary" id="more" onclick="loadMore()">Load More</button>
+  <div id="movies" class="grid">Loading movies...</div>
+  <button onclick="loadMore()">Load More</button>
 </main>
 
-<div class="modal" id="modal">
-  <div class="dialog">
-    <button class="close" onclick="closeModal()">Close ✕</button>
+<div id="modal">
+  <div class="panel">
+    <button onclick="closeMovie()">✕ Close</button>
     <div id="details"></div>
-    <p id="message"></p>
-    <video id="player" controls playsinline style="display:none"></video>
+    <div id="player"></div>
+    <div id="watchOptions"></div>
   </div>
 </div>
 
-<footer>
-  MOVPARK is an independent movie discovery project.
-  Movie information provided by TMDB.
-  MOVPARK is not endorsed or certified by TMDB.
-</footer>
-
 <script>
-// ======================================
-// PASTE YOUR TMDB API KEY ONLY HERE
-// ======================================
 const TMDB_API_KEY = "916706f1b6e4d8f8a66934be7d0b6410";
 
-// ======================================
+/*
+Add only videos you own or have permission to embed.
 
-const API = "https://api.themoviedb.org/3";
-const IMG = "https://image.tmdb.org/t/p/w500";
+Example:
+"550": {
+  youtube: "https://www.youtube.com/watch?v=VIDEO_ID",
+  vimeo: "https://vimeo.com/VIDEO_ID",
+  mx: "https://www.mxplayer.in/official-movie-page"
+}
+
+The number is the TMDB movie ID.
+*/
+const LEGAL_VIDEOS = {
+  // Add authorized movie video links here.
+};
+
+const IMAGE = "https://image.tmdb.org/t/p/w500";
 let page = 1;
-let currentQuery = "";
-let selectedLanguage = "all";
-let busy = false;
-
-const $ = id => document.getElementById(id);
+let currentMovies = [];
+let selectedMovie = null;
 
 function validKey(){
   return /^[a-f0-9]{32}$/i.test(TMDB_API_KEY);
 }
 
-async function tmdb(path){
+async function api(path){
   if(!validKey()){
-    throw new Error("Please add your TMDB API key at the top of the code.");
+    document.getElementById("movies").innerHTML =
+      "Please add your TMDB API key in the code first.";
+    return null;
   }
-  const separator = path.includes("?") ? "&" : "?";
   const response = await fetch(
-    API + path + separator + "api_key=" + encodeURIComponent(TMDB_API_KEY)
+    "https://api.themoviedb.org/3" + path +
+    (path.includes("?") ? "&" : "?") +
+    "api_key=" + TMDB_API_KEY
   );
-  if(!response.ok) throw new Error("TMDB error: " + response.status);
+  if(!response.ok) throw new Error("TMDB request failed");
   return response.json();
 }
 
-function imageUrl(path){
-  return path ? IMG + path : "";
-}
-
-function makeCard(movie){
-  const card = document.createElement("div");
-  card.className = "card";
-
-  const img = document.createElement("img");
-  img.src = imageUrl(movie.poster_path);
-  img.alt = movie.title || "Movie poster";
-  img.loading = "lazy";
-
-  const title = document.createElement("h3");
-  title.textContent = movie.title || "Untitled";
-
-  const year = document.createElement("p");
-  year.textContent = (movie.release_date || "").slice(0,4)
-    + " • " + (movie.original_language || "").toUpperCase();
-
-  card.append(img,title,year);
-  card.onclick = () => showDetails(movie);
-  return card;
-}
-
-function render(list, container){
-  container.innerHTML = "";
-  list.forEach(movie => container.appendChild(makeCard(movie)));
-}
-
-function languageFilter(list){
-  if(selectedLanguage === "all") return list;
-  return list.filter(movie => movie.original_language === selectedLanguage);
-}
-
-async function loadTrending(){
+async function loadMovies(){
+  page = 1;
+  const lang = document.getElementById("language").value;
+  const path = lang
+    ? `/discover/movie?language=en-US&with_original_language=${lang}&sort_by=popularity.desc&page=${page}`
+    : `/trending/movie/week?language=en-US&page=${page}`;
   try{
-    const data = await tmdb("/trending/movie/week?language=en-US");
-    render(languageFilter(data.results || []), $("trending"));
-  }catch(error){
-    $("status").textContent = error.message;
+    const data = await api(path);
+    if(data) showMovies(data.results, true);
+  }catch(e){
+    document.getElementById("movies").innerText = "Could not load movies. Check your API key and internet.";
   }
 }
 
-async function loadMovies(reset = false){
-  if(busy) return;
-  busy = true;
-  $("more").disabled = true;
-
-  if(reset){
-    page = 1;
-    $("movies").innerHTML = "";
-  }
-
-  try{
-    let path;
-
-    if(currentQuery){
-      path = "/search/movie?query=" + encodeURIComponent(currentQuery)
-        + "&include_adult=false&page=" + page + "&language=en-US";
-    }else{
-      path = "/discover/movie?include_adult=false&sort_by=popularity.desc"
-        + "&page=" + page + "&language=en-US";
-
-      if(selectedLanguage !== "all"){
-        path += "&with_original_language=" + selectedLanguage;
-      }
-    }
-
-    const data = await tmdb(path);
-    let results = data.results || [];
-
-    if(currentQuery && selectedLanguage !== "all"){
-      results = results.filter(movie =>
-        movie.original_language === selectedLanguage
-      );
-    }
-
-    results.forEach(movie => {
-      $("movies").appendChild(makeCard(movie));
-    });
-
-    $("status").textContent = results.length
-      ? "Movies loaded."
-      : "No matching movies found.";
-
-    $("more").style.display = page < (data.total_pages || 1)
-      ? "inline-block" : "none";
-
-  }catch(error){
-    $("status").textContent = error.message;
-  }finally{
-    busy = false;
-    $("more").disabled = false;
-  }
+function showMovies(list, reset=false){
+  if(reset) currentMovies = [];
+  currentMovies.push(...(list || []));
+  const container = document.getElementById("movies");
+  if(reset) container.innerHTML = "";
+  (list || []).forEach(movie=>{
+    const card = document.createElement("div");
+    card.className = "movie";
+    const poster = movie.poster_path
+      ? IMAGE + movie.poster_path
+      : "https://placehold.co/300x450?text=No+Poster";
+    card.innerHTML = `
+      <img src="${poster}" alt="">
+      <p>${escapeHTML(movie.title || "Untitled")}</p>`;
+    card.onclick = ()=>openMovie(movie.id);
+    container.appendChild(card);
+  });
 }
 
-function searchMovies(){
-  currentQuery = $("search").value.trim();
-  selectedLanguage = $("language").value;
-  loadMovies(true);
-}
-
-function loadMore(){
+async function loadMore(){
   page++;
-  loadMovies(false);
+  const lang = document.getElementById("language").value;
+  const path = lang
+    ? `/discover/movie?language=en-US&with_original_language=${lang}&sort_by=popularity.desc&page=${page}`
+    : `/trending/movie/week?language=en-US&page=${page}`;
+  try{
+    const data = await api(path);
+    if(data) showMovies(data.results);
+  }catch(e){}
 }
 
-$("language").addEventListener("change", searchMovies);
-$("search").addEventListener("keydown", e => {
-  if(e.key === "Enter") searchMovies();
-});
-
-// ======================================
-// INTERNET ARCHIVE VIDEO SEARCH
-// ======================================
-
-// Accept only recognized, shareable licence types.
-// Non-commercial licences are deliberately excluded.
-
-function allowedLicense(metadata){
-  const m = metadata.metadata || {};
-
-  const values = [
-    m.licenseurl,
-    m.license,
-    m.rights
-  ].flat().filter(Boolean).join(" ").toLowerCase();
-
-  if(values.includes("public domain")) return true;
-  if(values.includes("creativecommons.org/publicdomain/")) return true;
-  if(values.includes("creativecommons.org/licenses/cc0/")) return true;
-
-  const hasCC = values.includes("creativecommons.org/licenses/");
-  const allowedCC = /creativecommons\.org\/licenses\/by(-sa|-nd)?\/(2\.0|2\.5|3\.0|4\.0)/i;
-
-  return hasCC && allowedCC.test(values);
+let searchTimer;
+function searchMovies(){
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(async ()=>{
+    const q = document.getElementById("search").value.trim();
+    if(!q){loadMovies();return;}
+    try{
+      const data = await api(`/search/movie?query=${encodeURIComponent(q)}&page=1`);
+      if(data) showMovies(data.results, true);
+    }catch(e){}
+  },400);
 }
 
-function cleanTitle(value){
-  return (value || "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g,"")
-    .trim();
+async function openMovie(id){
+  try{
+    const movie = await api(`/movie/${id}?language=en-US`);
+    if(!movie) return;
+    selectedMovie = movie;
+    document.getElementById("modal").style.display = "block";
+    document.getElementById("details").innerHTML = `
+      <h2>${escapeHTML(movie.title || "")}</h2>
+      <p class="small">${movie.release_date || ""} | ${movie.runtime || "?"} min</p>
+      <p>${escapeHTML(movie.overview || "No description available.")}</p>
+    `;
+    document.getElementById("player").innerHTML =
+      "<p class='small' style='padding:15px'>Choose an available legal video source below.</p>";
+    showWatchOptions(movie);
+  }catch(e){
+    alert("Could not load movie details.");
+  }
 }
 
-function matchingTitle(a,b){
-  const x = cleanTitle(a);
-  const y = cleanTitle(b);
-  return x && y && x === y;
-}
+function showWatchOptions(movie){
+  const links = LEGAL_VIDEOS[movie.id] || {};
+  let html = "<h3>Watch Options</h3>";
 
-function encodeFilePath(path){
-  return path.split("/").map(part => encodeURIComponent(part)).join("/");
-}
-
-async function findLegalVideo(movie){
-  $("message").textContent =
-    "Searching for a matching movie with a recognized licence...";
-
-  const query = 'title:"' + movie.title.replace(/["\\]/g,"") +
-    '" AND mediatype:movies';
-
-  const searchURL =
-    "https://archive.org/advancedsearch.php?q=" +
-    encodeURIComponent(query) +
-    "&fl[]=identifier,title&rows=10&page=1&output=json";
-
-  const response = await fetch(searchURL);
-  if(!response.ok) throw new Error("Archive search failed.");
-
-  const searchData = await response.json();
-  const docs = searchData.response?.docs || [];
-
-  for(const item of docs){
-    if(!matchingTitle(item.title,movie.title)) continue;
-
-    const metadataResponse = await fetch(
-      "https://archive.org/metadata/" +
-      encodeURIComponent(item.identifier)
-    );
-
-    if(!metadataResponse.ok) continue;
-
-    const metadata = await metadataResponse.json();
-
-    if(!allowedLicense(metadata)) continue;
-
-    const files = metadata.files || [];
-
-    const videoFile = files.find(file => {
-      const name = (file.name || "").toLowerCase();
-      const format = (file.format || "").toLowerCase();
-
-      return name.endsWith(".mp4") ||
-        format === "mpeg4";
-    });
-
-    if(!videoFile) continue;
-
-    if(videoFile.size && Number(videoFile.size) < 100000) continue;
-
-    const url = "https://archive.org/download/" +
-      encodeURIComponent(item.identifier) + "/" +
-      encodeFilePath(videoFile.name);
-
-    return {
-      url,
-      identifier: item.identifier,
-      title: item.title,
-      license: metadata.metadata.licenseurl ||
-        metadata.metadata.license ||
-        metadata.metadata.rights ||
-        "Public Domain",
-      source: "Internet Archive"
-    };
+  if(links.youtube){
+    html += `<button onclick="playVideo('youtube')">Play on YouTube</button>`;
+  }
+  if(links.vimeo){
+    html += `<button onclick="playVideo('vimeo')">Play on Vimeo</button>`;
+  }
+  if(links.mx){
+    html += `<button onclick="openExternal('mx')">Open MX Player</button>`;
   }
 
+  html += `<button onclick="showTrailer()">Watch Official Trailer</button>`;
+  html += `<button onclick="showProviders()">OTT Availability</button>`;
+  html += `<p class="small">Only videos authorized for embedding are played here. Other official services open on their own websites.</p>`;
+
+  document.getElementById("watchOptions").innerHTML = html;
+}
+
+function getYouTubeId(url){
+  try{
+    const u = new URL(url);
+    if(u.hostname.includes("youtu.be")) return u.pathname.slice(1);
+    if(u.hostname.includes("youtube.com")) return u.searchParams.get("v");
+  }catch(e){}
   return null;
 }
 
-// ======================================
-// MOVIE DETAILS AND PLAYER
-// ======================================
+function playVideo(source){
+  const links = LEGAL_VIDEOS[selectedMovie.id] || {};
+  let url = links[source];
+  if(!url) return;
 
-let activeVideo = null;
+  let embed = "";
+  if(source === "youtube"){
+    const id = getYouTubeId(url);
+    if(id) embed = "https://www.youtube.com/embed/" + encodeURIComponent(id);
+  }
+  if(source === "vimeo"){
+    const match = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+    if(match) embed = "https://player.vimeo.com/video/" + match[1];
+  }
 
-async function showDetails(movie){
-  closeModal();
-
-  $("modal").style.display = "block";
-  $("player").style.display = "none";
-  $("message").textContent = "";
-
-  $("details").innerHTML = "";
-
-  const title = document.createElement("h2");
-  title.textContent = movie.title || "Movie";
-
-  const overview = document.createElement("p");
-  overview.textContent = movie.overview || "No description available.";
-
-  const info = document.createElement("p");
-  info.textContent =
-    "Release: " + (movie.release_date || "Unknown") +
-    " | Language: " + (movie.original_language || "Unknown");
-
-  const button = document.createElement("button");
-  button.textContent = "Find Legal Video & Play";
-  button.onclick = () => findAndPlay(movie, button);
-
-  $("details").append(title,overview,info,button);
+  if(embed){
+    document.getElementById("player").innerHTML =
+      `<iframe src="${embed}" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe>`;
+  }else{
+    alert("This video link cannot be embedded. Please check the official link.");
+  }
 }
 
-async function findAndPlay(movie, button){
-  button.disabled = true;
-  button.textContent = "Checking video...";
+function openExternal(source){
+  const links = LEGAL_VIDEOS[selectedMovie.id] || {};
+  if(links[source]) window.open(links[source], "_blank", "noopener");
+}
 
-  $("player").pause();
-  $("player").removeAttribute("src");
-  $("player").load();
-  $("player").style.display = "none";
-
+async function showTrailer(){
   try{
-    const video = await findLegalVideo(movie);
-
-    if(!video){
-      $("message").textContent =
-        "No matching video with a recognized licence and MP4 file was found. This movie will not be shown as playable.";
+    const data = await api(`/movie/${selectedMovie.id}/videos?language=en-US`);
+    const trailer = data.results.find(v =>
+      v.site === "YouTube" && (v.type === "Trailer" || v.type === "Teaser")
+    );
+    if(!trailer){
+      alert("No official trailer found.");
       return;
     }
-
-    activeVideo = video;
-
-    const player = $("player");
-    player.src = video.url;
-    player.style.display = "block";
-
-    $("message").textContent =
-      "Checking whether this video can play...";
-
-    player.oncanplay = () => {
-      $("message").innerHTML =
-        "Video ready. Source: Internet Archive. " +
-        "Licence: " + escapeHTML(String(video.license)) +
-        ' <br><a href="https://archive.org/details/' +
-        encodeURIComponent(video.identifier) +
-        '" target="_blank" rel="noopener">View original item and licence</a>';
-    };
-
-    player.onerror = () => {
-      player.style.display = "none";
-      player.removeAttribute("src");
-      $("message").textContent =
-        "This video could not be played. It has been hidden.";
-    };
-
-    await player.play();
-
-  }catch(error){
-    $("message").textContent =
-      "Unable to check this video: " + error.message;
-  }finally{
-    button.disabled = false;
-    button.textContent = "Find Legal Video & Play";
+    document.getElementById("player").innerHTML =
+      `<iframe src="https://www.youtube.com/embed/${trailer.key}" allowfullscreen></iframe>`;
+  }catch(e){
+    alert("Trailer could not be loaded.");
   }
+}
+
+async function showProviders(){
+  try{
+    const data = await api(`/movie/${selectedMovie.id}/watch/providers`);
+    const india = data.results && data.results.IN;
+    if(!india){
+      alert("OTT provider information is not available for India.");
+      return;
+    }
+    let html = "<h3>Available OTT Platforms in India</h3>";
+    ["flatrate","rent","buy"].forEach(type=>{
+      (india[type] || []).forEach(provider=>{
+        html += `<p>${escapeHTML(provider.provider_name)} - ${type}</p>`;
+      });
+    });
+    if(india.link){
+      html += `<p><a href="${india.link}" target="_blank" rel="noopener">View official watch options</a></p>`;
+    }
+    document.getElementById("watchOptions").innerHTML = html;
+  }catch(e){
+    alert("OTT information could not be loaded.");
+  }
+}
+
+function closeMovie(){
+  document.getElementById("modal").style.display = "none";
+  document.getElementById("player").innerHTML = "";
 }
 
 function escapeHTML(value){
-  return value.replace(/[&<>"']/g, char => ({
-    "&":"&amp;",
-    "<":"&lt;",
-    ">":"&gt;",
-    '"':"&quot;",
-    "'":"&#39;"
-  })[char]);
+  return String(value).replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[c]);
 }
 
-function closeModal(){
-  $("player").pause();
-  $("player").removeAttribute("src");
-  $("player").load();
-  $("player").style.display = "none";
-  $("modal").style.display = "none";
-  activeVideo = null;
-}
-
-$("modal").addEventListener("click", e => {
-  if(e.target === $("modal")) closeModal();
-});
-
-document.addEventListener("keydown", e => {
-  if(e.key === "Escape") closeModal();
-});
-
-// ======================================
-// START WEBSITE
-// ======================================
-
-async function start(){
-  if(!validKey()){
-    $("status").textContent =
-      "Add your TMDB API key at the top of this file to load movies.";
-    return;
-  }
-
-  await Promise.all([
-    loadTrending(),
-    loadMovies(true)
-  ]);
-}
-
-start();
+loadMovies();
 </script>
 </body>
 </html>
