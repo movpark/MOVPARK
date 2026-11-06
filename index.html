@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -183,7 +184,7 @@ width:38px;height:38px;font-size:24px}
    Add your TMDB API V3 key below.
 ====================================== */
 
-const TMDB_API_KEY = "YOUR_TMDB_API_KEY";
+const TMDB_API_KEY = "916706f1b6e4d8f8a66934be7d0b6410";
 
 const API = "https://api.themoviedb.org/3";
 const IMG = "https://image.tmdb.org/t/p/w500";
@@ -204,7 +205,7 @@ document.getElementById("year").textContent =
 
 function validKey(){
  return TMDB_API_KEY &&
- TMDB_API_KEY !== "916706f1b6e4d8f8a66934be7d0b6410";
+ TMDB_API_KEY !== "YOUR_TMDB_API_KEY";
 }
 
 async function api(endpoint){
