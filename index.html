@@ -3,61 +3,141 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MOVPARK - Watch Movies</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080d19">
+<title>MOVPARK - Watch Enjoy Share</title>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#090b12;color:white;font-family:Arial,sans-serif}
-header{padding:18px 5%;background:#111522;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-.logo{font-size:27px;font-weight:bold;color:#e50914}
-input,select{padding:12px;border:0;border-radius:7px;background:#222839;color:white}
+body{margin:0;background:#080d19;color:white;font-family:Arial,sans-serif}
+header{position:sticky;top:0;z-index:5;background:#0b1220;padding:15px 5%;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:1px solid #263249}
+.logo{font-size:27px;font-weight:900}.logo span{color:#079bff}
+input,select{padding:12px;border:1px solid #35425a;border-radius:9px;background:#172135;color:white}
+.search{flex:1;min-width:150px;max-width:430px}
+button{padding:12px 17px;border:0;border-radius:8px;background:#078eea;color:white;font-weight:bold;cursor:pointer;margin:4px}
+button:hover{filter:brightness(1.15)}
 main{padding:20px 5%}
-h2{margin-top:28px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:17px}
-.movie{background:#171c29;border-radius:9px;overflow:hidden;cursor:pointer}
-.movie img{width:100%;aspect-ratio:2/3;object-fit:cover}
-.movie p{padding:0 10px;font-size:14px;font-weight:bold}
-button{background:#e50914;color:white;border:0;padding:11px 16px;border-radius:6px;cursor:pointer;margin:4px}
-button:hover{background:#b20710}
-#modal{display:none;position:fixed;inset:0;background:#000e;overflow:auto;padding:20px;z-index:5}
-.panel{max-width:750px;margin:20px auto;background:#171c29;padding:20px;border-radius:12px}
-#player{width:100%;aspect-ratio:16/9;background:#000;margin-top:15px}
+.hero{padding:35px 25px;min-height:230px;border-radius:17px;background:linear-gradient(110deg,#07101e,#102d4a);border:1px solid #17639b;display:flex;flex-direction:column;justify-content:flex-end}
+.hero h1{font-size:clamp(28px,5vw,45px);margin:0 0 10px}
+.hero p{color:#c6d7e9;max-width:550px;line-height:1.5}
+.controls{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0}
+h2{margin:28px 0 16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(135px,1fr));gap:15px}
+.movie{background:#141e30;border:1px solid #26364d;border-radius:11px;overflow:hidden;cursor:pointer}
+.movie:hover{border-color:#079bff;transform:translateY(-3px)}
+.movie img{width:100%;aspect-ratio:2/3;object-fit:cover;display:block}
+.movie p{font-size:14px;font-weight:bold;padding:0 10px}
+.movie small{display:block;color:#aab6ca;padding:0 10px 12px}
+#status{color:#aab6ca;padding:12px 0}
+.community{margin:45px 0;padding:25px;border:2px solid #079bff;border-radius:20px;background:linear-gradient(120deg,#102b49,#091525);box-shadow:0 0 20px #078eea40;display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center}
+.community h2{margin:0;font-size:27px}
+.community p{color:#c1d0e4;line-height:1.5}
+.community-links{display:grid;gap:12px}
+.community-link{display:block;padding:17px;background:#078eea;color:white;text-align:center;text-decoration:none;font-weight:bold;border-radius:12px}
+.community-link:hover{background:#006fc5}
+footer{text-align:center;padding:30px 5%;border-top:1px solid #263249;color:#aab6ca}
+footer a{color:#45baff}
+#modal{display:none;position:fixed;inset:0;z-index:20;background:#000e;overflow:auto;padding:15px}
+.panel{max-width:760px;margin:20px auto;background:#111a2b;border:1px solid #34435c;border-radius:15px;padding:20px}
+#player{width:100%;aspect-ratio:16/9;background:#000;margin:18px 0;display:flex;align-items:center;justify-content:center;text-align:center;color:#bbc8d9;overflow:hidden}
 #player iframe{width:100%;height:100%;border:0}
-.small{color:#b9c0d0;font-size:13px}
-a{color:#ff646b}
+#details p{color:#c5cede;line-height:1.6}
+.small{font-size:13px;color:#aab6ca}
+#closeBtn{float:right;background:#34435a}
+a{color:#55baff}
+@media(max-width:600px){
+ header{justify-content:center}
+ .logo{width:100%;text-align:center}
+ .search{max-width:none;width:100%}
+ .hero{padding:22px;min-height:200px}
+ .community{grid-template-columns:1fr;text-align:center}
+ .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
 </style>
 </head>
+
 <body>
 
 <header>
-  <div class="logo">MOVPARK</div>
-  <input id="search" placeholder="Search movies..." oninput="searchMovies()">
-  <select id="language" onchange="loadMovies()">
-    <option value="">All Languages</option>
-    <option value="ml">Malayalam</option>
-    <option value="ta">Tamil</option>
-    <option value="te">Telugu</option>
-    <option value="hi">Hindi</option>
-    <option value="en">English</option>
-  </select>
+ <div class="logo">▶ MOV<span>PARK</span></div>
+ <input id="search" class="search" placeholder="Search movies...">
+ <a class="community-link" style="padding:12px 16px" href="https://t.me/movparktglist" target="_blank" rel="noopener">✈ Telegram</a>
 </header>
 
 <main>
-  <h2>Trending Movies</h2>
-  <div id="movies" class="grid">Loading movies...</div>
-  <button onclick="loadMore()">Load More</button>
+
+<section class="hero">
+ <h1>Welcome to MOVPARK</h1>
+ <p>Discover movies, explore entertainment and find official streaming options.</p>
+ <button onclick="document.getElementById('movieSection').scrollIntoView({behavior:'smooth'})">Explore Movies</button>
+</section>
+
+<div class="controls">
+ <select id="language">
+  <option value="">All Languages</option>
+  <option value="ml">Malayalam</option>
+  <option value="ta">Tamil</option>
+  <option value="te">Telugu</option>
+  <option value="hi">Hindi</option>
+  <option value="en">English</option>
+  <option value="kn">Kannada</option>
+ </select>
+
+ <select id="category">
+  <option value="trending">Trending</option>
+  <option value="popular">Popular</option>
+  <option value="now_playing">Now Playing</option>
+  <option value="top_rated">Top Rated</option>
+  <option value="upcoming">Upcoming</option>
+ </select>
+</div>
+
+<section id="movieSection">
+ <h2>🔥 Trending Movies</h2>
+ <div id="status">Loading movies...</div>
+ <div id="movies" class="grid"></div>
+ <div style="text-align:center;margin:25px">
+  <button id="loadMore">Load More</button>
+ </div>
+</section>
+
+<section class="community">
+ <div>
+  <h2>MOVPARK COMMUNITY 💙</h2>
+  <p>Join our Telegram community!</p>
+  <p>Stay updated with movie news, updates and more.</p>
+ </div>
+ <div class="community-links">
+  <a class="community-link" href="https://t.me/movparktglist" target="_blank" rel="noopener">✈ JOIN TELEGRAM CHANNEL</a>
+  <a class="community-link" href="https://t.me/movparktglist/90" target="_blank" rel="noopener">👥 OPEN DISCUSSION</a>
+ </div>
+</section>
+
 </main>
 
+<footer>
+ <h2>MOV<span style="color:#079bff">PARK</span></h2>
+ <p>Watch • Enjoy • Share</p>
+ <p>
+  <a href="https://t.me/movparktglist" target="_blank" rel="noopener">Telegram Channel</a> |
+  <a href="https://t.me/movparktglist/90" target="_blank" rel="noopener">Discussion</a>
+ </p>
+ <p>© 2026 MOVPARK. All rights reserved.</p>
+ <p>Movie information powered by TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
+</footer>
+
 <div id="modal">
-  <div class="panel">
-    <button onclick="closeMovie()">✕ Close</button>
-    <div id="details"></div>
-    <div id="player"></div>
-    <div id="watchOptions"></div>
-  </div>
+ <div class="panel">
+  <button id="closeBtn">✕ Close</button>
+  <div id="details"></div>
+  <div id="player">Choose a video source below.</div>
+  <div id="watchOptions"></div>
+ </div>
 </div>
 
 <script>
+
+/* ADD YOUR TMDB API KEY HERE */
 const TMDB_API_KEY = "916706f1b6e4d8f8a66934be7d0b6410";
 
 /*
@@ -65,228 +145,335 @@ Add only videos you own or have permission to embed.
 
 Example:
 "550": {
-  youtube: "https://www.youtube.com/watch?v=VIDEO_ID",
-  vimeo: "https://vimeo.com/VIDEO_ID",
-  mx: "https://www.mxplayer.in/official-movie-page"
+ youtube: "https://www.youtube.com/watch?v=VIDEO_ID",
+ vimeo: "https://vimeo.com/VIDEO_ID",
+ mx: "https://www.mxplayer.in/official-page",
+ hotstar: "https://www.hotstar.com/in/official-page"
 }
-
-The number is the TMDB movie ID.
 */
-const LEGAL_VIDEOS = {
-  // Add authorized movie video links here.
-};
+const LEGAL_VIDEOS = {};
 
-const IMAGE = "https://image.tmdb.org/t/p/w500";
+const API = "https://api.themoviedb.org/3";
+const IMG = "https://image.tmdb.org/t/p/w500";
+
 let page = 1;
-let currentMovies = [];
 let selectedMovie = null;
+let searchMode = false;
+let searchTimer;
+
+const moviesBox = document.getElementById("movies");
+const statusBox = document.getElementById("status");
+const languageBox = document.getElementById("language");
+const categoryBox = document.getElementById("category");
 
 function validKey(){
-  return /^[a-f0-9]{32}$/i.test(TMDB_API_KEY);
-}
-
-async function api(path){
-  if(!validKey()){
-    document.getElementById("movies").innerHTML =
-      "Please add your TMDB API key in the code first.";
-    return null;
-  }
-  const response = await fetch(
-    "https://api.themoviedb.org/3" + path +
-    (path.includes("?") ? "&" : "?") +
-    "api_key=" + TMDB_API_KEY
-  );
-  if(!response.ok) throw new Error("TMDB request failed");
-  return response.json();
-}
-
-async function loadMovies(){
-  page = 1;
-  const lang = document.getElementById("language").value;
-  const path = lang
-    ? `/discover/movie?language=en-US&with_original_language=${lang}&sort_by=popularity.desc&page=${page}`
-    : `/trending/movie/week?language=en-US&page=${page}`;
-  try{
-    const data = await api(path);
-    if(data) showMovies(data.results, true);
-  }catch(e){
-    document.getElementById("movies").innerText = "Could not load movies. Check your API key and internet.";
-  }
-}
-
-function showMovies(list, reset=false){
-  if(reset) currentMovies = [];
-  currentMovies.push(...(list || []));
-  const container = document.getElementById("movies");
-  if(reset) container.innerHTML = "";
-  (list || []).forEach(movie=>{
-    const card = document.createElement("div");
-    card.className = "movie";
-    const poster = movie.poster_path
-      ? IMAGE + movie.poster_path
-      : "https://placehold.co/300x450?text=No+Poster";
-    card.innerHTML = `
-      <img src="${poster}" alt="">
-      <p>${escapeHTML(movie.title || "Untitled")}</p>`;
-    card.onclick = ()=>openMovie(movie.id);
-    container.appendChild(card);
-  });
-}
-
-async function loadMore(){
-  page++;
-  const lang = document.getElementById("language").value;
-  const path = lang
-    ? `/discover/movie?language=en-US&with_original_language=${lang}&sort_by=popularity.desc&page=${page}`
-    : `/trending/movie/week?language=en-US&page=${page}`;
-  try{
-    const data = await api(path);
-    if(data) showMovies(data.results);
-  }catch(e){}
-}
-
-let searchTimer;
-function searchMovies(){
-  clearTimeout(searchTimer);
-  searchTimer = setTimeout(async ()=>{
-    const q = document.getElementById("search").value.trim();
-    if(!q){loadMovies();return;}
-    try{
-      const data = await api(`/search/movie?query=${encodeURIComponent(q)}&page=1`);
-      if(data) showMovies(data.results, true);
-    }catch(e){}
-  },400);
-}
-
-async function openMovie(id){
-  try{
-    const movie = await api(`/movie/${id}?language=en-US`);
-    if(!movie) return;
-    selectedMovie = movie;
-    document.getElementById("modal").style.display = "block";
-    document.getElementById("details").innerHTML = `
-      <h2>${escapeHTML(movie.title || "")}</h2>
-      <p class="small">${movie.release_date || ""} | ${movie.runtime || "?"} min</p>
-      <p>${escapeHTML(movie.overview || "No description available.")}</p>
-    `;
-    document.getElementById("player").innerHTML =
-      "<p class='small' style='padding:15px'>Choose an available legal video source below.</p>";
-    showWatchOptions(movie);
-  }catch(e){
-    alert("Could not load movie details.");
-  }
-}
-
-function showWatchOptions(movie){
-  const links = LEGAL_VIDEOS[movie.id] || {};
-  let html = "<h3>Watch Options</h3>";
-
-  if(links.youtube){
-    html += `<button onclick="playVideo('youtube')">Play on YouTube</button>`;
-  }
-  if(links.vimeo){
-    html += `<button onclick="playVideo('vimeo')">Play on Vimeo</button>`;
-  }
-  if(links.mx){
-    html += `<button onclick="openExternal('mx')">Open MX Player</button>`;
-  }
-
-  html += `<button onclick="showTrailer()">Watch Official Trailer</button>`;
-  html += `<button onclick="showProviders()">OTT Availability</button>`;
-  html += `<p class="small">Only videos authorized for embedding are played here. Other official services open on their own websites.</p>`;
-
-  document.getElementById("watchOptions").innerHTML = html;
-}
-
-function getYouTubeId(url){
-  try{
-    const u = new URL(url);
-    if(u.hostname.includes("youtu.be")) return u.pathname.slice(1);
-    if(u.hostname.includes("youtube.com")) return u.searchParams.get("v");
-  }catch(e){}
-  return null;
-}
-
-function playVideo(source){
-  const links = LEGAL_VIDEOS[selectedMovie.id] || {};
-  let url = links[source];
-  if(!url) return;
-
-  let embed = "";
-  if(source === "youtube"){
-    const id = getYouTubeId(url);
-    if(id) embed = "https://www.youtube.com/embed/" + encodeURIComponent(id);
-  }
-  if(source === "vimeo"){
-    const match = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
-    if(match) embed = "https://player.vimeo.com/video/" + match[1];
-  }
-
-  if(embed){
-    document.getElementById("player").innerHTML =
-      `<iframe src="${embed}" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe>`;
-  }else{
-    alert("This video link cannot be embedded. Please check the official link.");
-  }
-}
-
-function openExternal(source){
-  const links = LEGAL_VIDEOS[selectedMovie.id] || {};
-  if(links[source]) window.open(links[source], "_blank", "noopener");
-}
-
-async function showTrailer(){
-  try{
-    const data = await api(`/movie/${selectedMovie.id}/videos?language=en-US`);
-    const trailer = data.results.find(v =>
-      v.site === "YouTube" && (v.type === "Trailer" || v.type === "Teaser")
-    );
-    if(!trailer){
-      alert("No official trailer found.");
-      return;
-    }
-    document.getElementById("player").innerHTML =
-      `<iframe src="https://www.youtube.com/embed/${trailer.key}" allowfullscreen></iframe>`;
-  }catch(e){
-    alert("Trailer could not be loaded.");
-  }
-}
-
-async function showProviders(){
-  try{
-    const data = await api(`/movie/${selectedMovie.id}/watch/providers`);
-    const india = data.results && data.results.IN;
-    if(!india){
-      alert("OTT provider information is not available for India.");
-      return;
-    }
-    let html = "<h3>Available OTT Platforms in India</h3>";
-    ["flatrate","rent","buy"].forEach(type=>{
-      (india[type] || []).forEach(provider=>{
-        html += `<p>${escapeHTML(provider.provider_name)} - ${type}</p>`;
-      });
-    });
-    if(india.link){
-      html += `<p><a href="${india.link}" target="_blank" rel="noopener">View official watch options</a></p>`;
-    }
-    document.getElementById("watchOptions").innerHTML = html;
-  }catch(e){
-    alert("OTT information could not be loaded.");
-  }
-}
-
-function closeMovie(){
-  document.getElementById("modal").style.display = "none";
-  document.getElementById("player").innerHTML = "";
+ return /^[a-f0-9]{32}$/i.test(TMDB_API_KEY);
 }
 
 function escapeHTML(value){
-  return String(value).replace(/[&<>"']/g, c => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-  })[c]);
+ return String(value ?? "").replace(/[&<>"']/g,c=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ })[c]);
 }
 
+async function api(path){
+ if(!validKey()) throw new Error("Please add your TMDB API key.");
+
+ const separator = path.includes("?") ? "&" : "?";
+ const response = await fetch(
+  API + path + separator + "api_key=" + encodeURIComponent(TMDB_API_KEY)
+ );
+
+ if(!response.ok) throw new Error("API error: "+response.status);
+ return response.json();
+}
+
+function getCategoryPath(){
+ const category = categoryBox.value;
+
+ if(category==="trending"){
+  return `/trending/movie/week?language=en-US&page=${page}`;
+ }
+
+ return `/movie/${category}?language=en-US&page=${page}`;
+}
+
+async function loadMovies(reset=true){
+ if(reset){
+  page=1;
+  searchMode=false;
+  moviesBox.innerHTML="";
+ }
+
+ statusBox.textContent="Loading movies...";
+
+ try{
+  let data;
+  const language=languageBox.value;
+
+  if(language){
+   data=await api(
+    `/discover/movie?language=en-US&with_original_language=${encodeURIComponent(language)}&sort_by=popularity.desc&page=${page}`
+   );
+  }else{
+   data=await api(getCategoryPath());
+  }
+
+  displayMovies(data.results,reset);
+  statusBox.textContent=data.results.length?"":"No movies found.";
+
+ }catch(error){
+  statusBox.textContent=error.message;
+ }
+}
+
+function displayMovies(list,reset=true){
+ if(reset) moviesBox.innerHTML="";
+
+ (list||[]).forEach(movie=>{
+  const card=document.createElement("article");
+  card.className="movie";
+
+  const image=movie.poster_path
+   ? IMG+movie.poster_path
+   : "https://placehold.co/300x450/172135/ffffff?text=No+Poster";
+
+  card.innerHTML=`
+   <img src="${image}" alt="${escapeHTML(movie.title)}" loading="lazy">
+   <p>${escapeHTML(movie.title||"Untitled")}</p>
+   <small>${escapeHTML(movie.release_date?.slice(0,4)||"Year unavailable")}</small>
+  `;
+
+  card.addEventListener("click",()=>openMovie(movie.id));
+  moviesBox.appendChild(card);
+ });
+}
+
+async function loadMore(){
+ page++;
+
+ if(searchMode){
+  searchMovies(true);
+ }else{
+  await loadMovies(false);
+ }
+}
+
+async function searchMovies(keepPage=false){
+ const query=document.getElementById("search").value.trim();
+
+ if(!query){
+  loadMovies(true);
+  return;
+ }
+
+ if(!keepPage) page=1;
+
+ searchMode=true;
+ statusBox.textContent="Searching...";
+ if(!keepPage) moviesBox.innerHTML="";
+
+ try{
+  const data=await api(
+   `/search/movie?query=${encodeURIComponent(query)}&language=en-US&page=${page}`
+  );
+
+  displayMovies(data.results,!keepPage);
+  statusBox.textContent=data.results.length?"":"No matching movies found.";
+
+ }catch(error){
+  statusBox.textContent=error.message;
+ }
+}
+
+document.getElementById("search").addEventListener("input",()=>{
+ clearTimeout(searchTimer);
+ searchTimer=setTimeout(()=>searchMovies(false),400);
+});
+
+languageBox.addEventListener("change",()=>loadMovies(true));
+categoryBox.addEventListener("change",()=>loadMovies(true));
+document.getElementById("loadMore").addEventListener("click",loadMore);
+
+async function openMovie(id){
+ try{
+  const movie=await api(`/movie/${id}?language=en-US`);
+  selectedMovie=movie;
+
+  document.getElementById("modal").style.display="block";
+
+  const poster=movie.poster_path?IMG+movie.poster_path:"";
+
+  document.getElementById("details").innerHTML=`
+   <h2>${escapeHTML(movie.title)}</h2>
+   ${poster?`<img src="${poster}" style="width:110px;border-radius:9px;float:left;margin:0 15px 12px 0" alt="">`:""}
+   <p>${escapeHTML(movie.overview||"Description unavailable.")}</p>
+   <p class="small">Release: ${escapeHTML(movie.release_date||"Unknown")} | Rating: ${escapeHTML(movie.vote_average||"N/A")}/10</p>
+   <div style="clear:both"></div>
+  `;
+
+  document.getElementById("player").textContent="Select a video option below.";
+  showWatchOptions(movie);
+
+ }catch(error){
+  alert(error.message);
+ }
+}
+
+function showWatchOptions(movie){
+ const links=LEGAL_VIDEOS[String(movie.id)]||{};
+
+ let html="<h3>Watch Options</h3>";
+ html+=`<button onclick="showTrailer()">▶ Official Trailer</button>`;
+ html+=`<button class="secondary" onclick="showProviders()">OTT Availability</button>`;
+
+ if(links.youtube) html+=`<button onclick="playVideo('youtube')">Play on YouTube</button>`;
+ if(links.vimeo) html+=`<button onclick="playVideo('vimeo')">Play on Vimeo</button>`;
+ if(links.mx) html+=`<button onclick="openExternal('mx')">Open MX Player</button>`;
+ if(links.hotstar) html+=`<button onclick="openExternal('hotstar')">Open JioHotstar</button>`;
+
+ html+=`<p class="small">Only authorized videos can be embedded. Other services open on their official websites.</p>`;
+
+ document.getElementById("watchOptions").innerHTML=html;
+}
+
+function getYouTubeID(url){
+ try{
+  const parsed=new URL(url);
+
+  if(parsed.hostname==="youtu.be") return parsed.pathname.slice(1);
+
+  if(parsed.hostname.includes("youtube.com")){
+   if(parsed.searchParams.get("v")) return parsed.searchParams.get("v");
+   const match=parsed.pathname.match(/\/embed\/([^/]+)/);
+   return match?match[1]:null;
+  }
+ }catch(error){}
+
+ return null;
+}
+
+function playVideo(source){
+ const links=LEGAL_VIDEOS[String(selectedMovie.id)]||{};
+ const url=links[source];
+
+ if(!url) return;
+
+ let embed="";
+
+ if(source==="youtube"){
+  const id=getYouTubeID(url);
+  if(id) embed="https://www.youtube.com/embed/"+encodeURIComponent(id);
+ }
+
+ if(source==="vimeo"){
+  try{
+   const parsed=new URL(url);
+   if(parsed.hostname.endsWith("vimeo.com")){
+    const match=parsed.pathname.match(/\/(?:video\/)?(\d+)/);
+    if(match) embed="https://player.vimeo.com/video/"+match[1];
+   }
+  }catch(error){}
+ }
+
+ if(!embed){
+  alert("Invalid or unsupported video link.");
+  return;
+ }
+
+ document.getElementById("player").innerHTML=`
+  <iframe src="${embed}" allowfullscreen
+  allow="autoplay; fullscreen; picture-in-picture"
+  title="Video player"></iframe>
+ `;
+}
+
+function openExternal(source){
+ const links=LEGAL_VIDEOS[String(selectedMovie.id)]||{};
+ const url=links[source];
+
+ if(!url) return;
+
+ try{
+  const parsed=new URL(url);
+  if(parsed.protocol!=="https:") throw new Error("Invalid URL");
+  window.open(parsed.href,"_blank","noopener,noreferrer");
+ }catch(error){
+  alert("Invalid official link.");
+ }
+}
+
+async function showTrailer(){
+ try{
+  const data=await api(`/movie/${selectedMovie.id}/videos?language=en-US`);
+
+  const trailer=data.results.find(v=>
+   v.site==="YouTube" &&
+   (v.type==="Trailer"||v.type==="Teaser")
+  );
+
+  if(!trailer){
+   alert("No official trailer available.");
+   return;
+  }
+
+  document.getElementById("player").innerHTML=`
+   <iframe src="https://www.youtube.com/embed/${encodeURIComponent(trailer.key)}"
+   allowfullscreen allow="autoplay; fullscreen"
+   title="Official trailer"></iframe>
+  `;
+
+ }catch(error){
+  alert("Trailer could not be loaded.");
+ }
+}
+
+async function showProviders(){
+ try{
+  const data=await api(
+   `/movie/${selectedMovie.id}/watch/providers`
+  );
+
+  const india=data.results?.IN;
+
+  if(!india){
+   document.getElementById("watchOptions").innerHTML=
+    "<p>OTT provider information is unavailable for India.</p>";
+   return;
+  }
+
+  let html="<h3>OTT Availability - India</h3>";
+
+  ["flatrate","rent","buy","free","ads"].forEach(type=>{
+   (india[type]||[]).forEach(provider=>{
+    html+=`<p>${escapeHTML(provider.provider_name)} - ${escapeHTML(type)}</p>`;
+   });
+  });
+
+  if(india.link){
+   html+=`<p><a href="${escapeHTML(india.link)}" target="_blank" rel="noopener">Official watch options</a></p>`;
+  }
+
+  document.getElementById("watchOptions").innerHTML=html;
+
+ }catch(error){
+  alert("OTT information could not be loaded.");
+ }
+}
+
+function closeMovie(){
+ document.getElementById("modal").style.display="none";
+ document.getElementById("player").innerHTML="";
+}
+
+document.getElementById("closeBtn").addEventListener("click",closeMovie);
+
+document.getElementById("modal").addEventListener("click",event=>{
+ if(event.target.id==="modal") closeMovie();
+});
+
 loadMovies();
+
 </script>
 </body>
 </html>
